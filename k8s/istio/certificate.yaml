@@ -22,5 +22,5 @@ spec:
     - server auth
   # At least one of a DNS Name, URI, or IP address is required.
   dnsNames:
-  - bookinfo.istio.aws.bradandmarsha.com
-  - bookinfo-test.istio.aws.bradandmarsha.com
+  - bookinfo.istio.superscalability.com
+  - bookinfo-test.istio.superscalability.com

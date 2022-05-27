@@ -6,7 +6,7 @@ metadata:
   namespace: bookinfo-green
 spec:
   hosts:
-  - "bookinfo-test.istio.aws.bradandmarsha.com"
+  - "bookinfo-test.istio.superscalability.com"
   gateways:
   - istio-system/bookinfo-gateway
   http:

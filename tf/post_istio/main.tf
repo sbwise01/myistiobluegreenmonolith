@@ -2,20 +2,20 @@ terraform {
   required_version = "~> 0.12.31"
 
   backend "s3" {
-    bucket = "bw-terraform-state-us-east-1"
+    bucket = "brad-terraform-state-us-east-1"
     key    = "istio-blue-green-post-istio.tfstate"
     region = "us-east-1"
-    profile = "foghorn-io-brad"
+    profile = "supportfog"
   }
 }
 
 data "terraform_remote_state" "main" {
   backend = "s3"
   config = {
-    bucket = "bw-terraform-state-us-east-1"
+    bucket = "brad-terraform-state-us-east-1"
     key    = "istio-blue-green.tfstate"
     region = "us-east-1"
-    profile = "foghorn-io-brad"
+    profile = "supportfog"
   }
 }
 
@@ -36,7 +36,7 @@ data "aws_lb" "ingress" {
 
 provider "aws" {
   region  = "us-west-2"
-  profile = "foghorn-io-brad"
+  profile = "supportfog"
   version = "~> 2.45"
 }
 

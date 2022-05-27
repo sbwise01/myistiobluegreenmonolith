@@ -2,10 +2,10 @@ terraform {
   required_version = "~> 0.12.31"
 
   backend "s3" {
-    bucket = "bw-terraform-state-us-east-1"
+    bucket = "brad-terraform-state-us-east-1"
     key    = "istio-blue-green.tfstate"
     region = "us-east-1"
-    profile = "foghorn-io-brad"
+    profile = "supportfog"
   }
 }
 
@@ -13,14 +13,14 @@ data "aws_caller_identity" "current" {}
 
 provider "aws" {
   region  = "us-west-2"
-  profile = "foghorn-io-brad"
+  profile = "supportfog"
   version = "~> 3.27"
 }
 
 provider "aws" {
   alias  = "us-east-1"
   region  = "us-east-1"
-  profile = "foghorn-io-brad"
+  profile = "supportfog"
   version = "~> 3.27"
 }
 
@@ -29,7 +29,7 @@ resource "random_string" "suffix" {
   special = false
 }
 
-# Note this is also used to construct sub-zone of aws.bradandmarsha.com
+# Note this is also used to construct sub-zone of superscalability.com
 variable "cluster_name" {
   default = "istio"
 }
@@ -213,13 +213,12 @@ resource "kubernetes_service_account" "service_accounts" {
   }
 }
 
-resource "aws_route53_zone" "parent_zone" {
-  name              = "aws.bradandmarsha.com"
-  delegation_set_id = "N03386422VXZJKGR4YO18"
+data "aws_route53_zone" "parent_zone" {
+  name         = "superscalability.com."
 }
 
 resource "aws_route53_zone" "zone" {
-  name              = "${var.cluster_name}.aws.bradandmarsha.com"
+  name              = "${var.cluster_name}.superscalability.com"
 }
 
 resource "kubernetes_config_map" "zone-ids" {
@@ -241,14 +240,14 @@ resource "aws_route53_record" "delegation" {
   name            = var.cluster_name
   ttl             = 300
   type            = "NS"
-  zone_id         = aws_route53_zone.parent_zone.id
+  zone_id         = data.aws_route53_zone.parent_zone.id
   records         = aws_route53_zone.zone.name_servers
 }
 
 resource "aws_acm_certificate" "cert" {
   provider          = aws.us-east-1
-  domain_name       = "${var.cluster_name}.aws.bradandmarsha.com"
-  subject_alternative_names = ["*.${var.cluster_name}.aws.bradandmarsha.com"]
+  domain_name       = "${var.cluster_name}.superscalability.com"
+  subject_alternative_names = ["*.${var.cluster_name}.superscalability.com"]
   validation_method = "DNS"
 
   lifecycle {
@@ -265,12 +264,11 @@ resource "aws_route53_record" "cert_validation" {
     }
   }
 
-  name            = each.value.name
-  type            = each.value.type
-  zone_id         = aws_route53_zone.zone.zone_id
-  records         = [each.value.record]
-  ttl             = 60
-  allow_overwrite = true
+  name    = each.value.name
+  type    = each.value.type
+  zone_id = aws_route53_zone.zone.zone_id
+  records = [each.value.record]
+  ttl     = 60
 }
 
 resource "aws_acm_certificate_validation" "cert" {
@@ -280,7 +278,7 @@ resource "aws_acm_certificate_validation" "cert" {
 }
 
 output "domain_name" {
-  value = "${var.cluster_name}.aws.bradandmarsha.com"
+  value = "${var.cluster_name}.superscalability.com"
 }
 
 output "acm_cert_arn" {

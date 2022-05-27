@@ -13,8 +13,8 @@ spec:
       name: https
       protocol: HTTPS
     hosts:
-    - "bookinfo.istio.aws.bradandmarsha.com"
-    - "bookinfo-test.istio.aws.bradandmarsha.com"
+    - "bookinfo.istio.superscalability.com"
+    - "bookinfo-test.istio.superscalability.com"
     tls:
       mode: SIMPLE # enables HTTPS on this port
       credentialName: ingressgateway-certs
